@@ -1,0 +1,383 @@
+/*
+ * polish.css — NeuralGraph Step 10: Production Polish
+ * Styles for: toolbar, minimap, shortcuts overlay, onboarding card, Stats.js panel.
+ * Dark theme: #09090f bg · #0d0d18 sidebar · #1e1e2e border · IBM Plex Mono
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   FLOATING TOOLBAR
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-toolbar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 4px;
+    padding: 5px 6px;
+    background: rgba(9, 9, 15, 0.88);
+    border: 1px solid #1e1e2e;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 50;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.ng-tb-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #4a4a6a;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ng-tb-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 1.75;
+}
+
+.ng-tb-btn:hover {
+    background: #141428;
+    color: #c8c8e8;
+    border-color: #2a2a48;
+}
+
+.ng-tb-btn.active {
+    background: #141428;
+    color: #4f8ef7;
+    border-color: #4f8ef7;
+}
+
+.ng-tb-btn.active.ng-phys-paused {
+    color: #f74f6a;
+    border-color: #f74f6a;
+}
+
+/* Separator divider */
+.ng-tb-sep {
+    width: 1px;
+    height: 20px;
+    background: #1e1e2e;
+    margin: 0 2px;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+/* Tooltip */
+.ng-tb-btn::after {
+    content: attr(title);
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #0d0d18;
+    border: 1px solid #1e1e2e;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #8a8aba;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms ease 300ms;
+    z-index: 100;
+}
+
+.ng-tb-btn:hover::after {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MINIMAP
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-minimap {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 160px;
+    height: 120px;
+    border: 1px solid #2a2a4a;
+    border-radius: 4px;
+    cursor: crosshair;
+    z-index: 40;
+    transition: opacity 250ms ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+#ng-minimap:hover {
+    border-color: #4f8ef7;
+}
+
+#ng-minimap.ng-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   KEYBOARD SHORTCUTS OVERLAY
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-shortcuts-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 9, 15, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: ng-fadeIn 150ms ease;
+}
+
+@keyframes ng-fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#ng-sc-panel {
+    background: #0d0d18;
+    border: 1px solid #2a2a48;
+    border-radius: 8px;
+    width: 360px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+    animation: ng-slideUp 180ms ease;
+}
+
+@keyframes ng-slideUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+#ng-sc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #1e1e2e;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6a6a9a;
+}
+
+#ng-sc-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: #4a4a6a;
+    cursor: pointer;
+    transition: background 120ms, color 120ms, border-color 120ms;
+}
+
+#ng-sc-close:hover {
+    background: #1a0809;
+    color: #f74f6a;
+    border-color: #f74f6a;
+}
+
+#ng-sc-close svg {
+    width: 12px;
+    height: 12px;
+}
+
+#ng-sc-list {
+    padding: 10px 0 14px;
+}
+
+.ng-sc-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 18px;
+    transition: background 100ms;
+}
+
+.ng-sc-row:hover {
+    background: #0f0f1e;
+}
+
+.ng-sc-row kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 3px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    background: #141428;
+    border: 1px solid #2a2a48;
+    border-radius: 3px;
+    color: #8a8aba;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.ng-sc-row span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #8a8aba;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ONBOARDING CARD
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-onboarding {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(9, 9, 15, 0.82);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 30;
+    animation: ng-fadeIn 300ms ease;
+}
+
+.ng-ob-border-wrap {
+    padding: 2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #4f8ef7, #b44ff7, #4ff7a0, #f7a04f, #4f8ef7);
+    background-size: 300% 300%;
+    animation: ng-ob-grad 4s ease infinite;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes ng-ob-grad {
+    0%, 100% { background-position:   0% 50%; }
+    50%       { background-position: 100% 50%; }
+}
+
+#ng-ob-inner {
+    background: #0d0d18;
+    border-radius: 12px;
+    padding: 36px 40px;
+    max-width: 420px;
+    text-align: center;
+}
+
+#ng-ob-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: #e2e2f0;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+}
+
+#ng-ob-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #6a6a9a;
+    margin-bottom: 28px;
+}
+
+#ng-ob-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.ng-ob-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    background: #141428;
+    border: 1px solid #2a2a48;
+    border-radius: 5px;
+    color: #8a8aba;
+    cursor: pointer;
+    transition: background 150ms, color 150ms, border-color 150ms;
+}
+
+.ng-ob-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+.ng-ob-btn:hover {
+    background: #0f0f1e;
+    color: #c8c8e8;
+    border-color: #4a4a6a;
+}
+
+.ng-ob-btn--accent {
+    background: rgba(79, 142, 247, 0.1);
+    border-color: #4f8ef7;
+    color: #4f8ef7;
+}
+
+.ng-ob-btn--accent:hover {
+    background: rgba(79, 142, 247, 0.18);
+    color: #8ab8f7;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   STATS.JS PANEL
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-stats-panel {
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    z-index: 9999 !important;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 120ms;
+}
+
+#ng-stats-panel:hover {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SCROLL-TO-ZOOM EASING — smooth wheel visual (no style change needed;
+   handled in JS via targetRadius lerp already in neuralGraph3D.js)
+   ─────────────────────────────────────────────────────────────────────────
+   Alt+drag pan cursor hint
+   ───────────────────────────────────────────────────────────────────────── */
+
+#graph-canvas.ng-pan-mode {
+    cursor: grab;
+}
+
+#graph-canvas.ng-pan-mode:active {
+    cursor: grabbing;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SAVE STATUS (autosave.js) — re-style to match toolbar area
+   ───────────────────────────────────────────────────────────────────────── */
+
+#ng-save-status {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+}

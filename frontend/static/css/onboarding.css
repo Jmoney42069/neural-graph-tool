@@ -1,0 +1,166 @@
+/* FILE: onboarding.css
+   SCOPE: Empty state / onboarding card with animated gradient border
+   DEPENDS: design-system.css variables */
+
+/* ============================================================
+   ONBOARDING OVERLAY
+   ============================================================ */
+#ng-onboarding {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg-void);
+  z-index: 10;
+  transition: opacity 600ms var(--ease-out-expo);
+  animation: onboarding-in 600ms var(--ease-out-expo);
+}
+@keyframes onboarding-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+#ng-onboarding.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Card container with animated gradient border ─────────── */
+.ng-ob-border-wrap {
+  border-radius: 16px;
+  position: relative;
+  padding: 1px;
+}
+
+/* Animated conic gradient border */
+.ng-ob-border-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    #4f8ef7, #b44ff7, #4ff7a0, #4f8ef7
+  );
+  z-index: -1;
+  animation: borderSpin 4s linear infinite;
+  opacity: 0.5;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes borderSpin {
+  to { --angle: 360deg; }
+}
+
+#ng-ob-inner {
+  text-align: center;
+  padding: 48px;
+  max-width: 460px;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  position: relative;
+}
+
+/* Mini universe canvas */
+.ng-ob-canvas-wrap {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+.ng-ob-canvas-wrap canvas {
+  border-radius: 8px;
+  opacity: 0.7;
+}
+
+#ng-ob-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#ng-ob-sub {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+#ng-ob-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* Primary CTA */
+.ng-ob-btn--accent {
+  padding: 12px 24px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(79, 142, 247, 0.3);
+  transition: all 200ms var(--ease-out-expo);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ng-ob-btn--accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(79, 142, 247, 0.45);
+}
+.ng-ob-btn--accent:active { transform: translateY(0) scale(0.97); }
+.ng-ob-btn--accent svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+.ng-ob-btn--accent i   { display: flex; align-items: center; }
+
+/* Secondary CTA */
+.ng-ob-btn {
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 200ms var(--ease-out-expo);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ng-ob-btn:hover {
+  border-color: rgba(79, 142, 247, 0.3);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+.ng-ob-btn:active { transform: translateY(0) scale(0.97); }
+.ng-ob-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+.ng-ob-btn i   { display: flex; align-items: center; }
+
+/* Drag-over state */
+#ng-onboarding.drag-over .ng-ob-border-wrap::before {
+  opacity: 1;
+  animation-duration: 1s;
+}
+
+/* Drop hint */
+.ng-ob-drop-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: -12px;
+}

@@ -1,0 +1,203 @@
+/* FILE: toolbar.css
+   SCOPE: Floating toolbar, tooltips, shortcuts overlay, minimap
+   DEPENDS: design-system.css variables */
+
+/* ============================================================
+   FLOATING TOOLBAR — glassmorphism pill, left-center
+   ============================================================ */
+#ng-toolbar {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 6px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 8px 32px rgba(0,0,0,0.5);
+  z-index: 5;
+  animation: toolbar-enter 400ms var(--ease-out-expo) both;
+  animation-delay: 300ms;
+}
+@keyframes toolbar-enter {
+  from { opacity: 0; transform: translateY(-50%) translateX(-12px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+.ng-tb-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, border-color 0.1s;
+  position: relative;
+}
+.ng-tb-btn i { display: flex; align-items: center; justify-content: center; }
+.ng-tb-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+.ng-tb-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+.ng-tb-btn.active {
+  background: rgba(79,142,247,0.12);
+  border-color: rgba(79,142,247,0.3);
+  color: var(--accent-blue);
+}
+.ng-tb-btn.ng-phys-paused {
+  color: var(--color-process);
+}
+
+/* Focus ring */
+.ng-tb-btn:focus-visible {
+  outline: 2px solid rgba(79,142,247,0.5);
+  outline-offset: 1px;
+}
+
+/* ── Tooltip (enterprise) ────────────────────────────────── */
+.ng-tb-btn::after {
+  content: attr(data-tooltip), attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-elevated);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+.ng-tb-btn:hover::after {
+  opacity: 1;
+}
+
+/* ── Separator ──────────────────────────────────────────────── */
+.ng-tb-sep {
+  width: 20px;
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 2px auto;
+}
+
+/* ============================================================
+   SHORTCUTS OVERLAY
+   ============================================================ */
+#ng-shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,5,0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  animation: fade-in 200ms var(--ease-out-expo);
+}
+@keyframes fade-in { from { opacity: 0; } }
+
+#ng-sc-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  min-width: 360px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+}
+
+#ng-sc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+}
+#ng-sc-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 150ms;
+}
+#ng-sc-close:hover { color: var(--text-primary); }
+#ng-sc-close svg { width: 14px; height: 14px; }
+
+#ng-sc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ng-sc-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0;
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+}
+.ng-sc-row kbd {
+  min-width: 56px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 5px;
+  padding: 3px 8px;
+  color: var(--accent-blue);
+  letter-spacing: 0.06em;
+}
+.ng-sc-row span {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   MINIMAP
+   ============================================================ */
+#ng-minimap {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 5;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  cursor: pointer;
+  pointer-events: none;
+}
+#ng-minimap.mm-ready {
+  opacity: 0.8;
+  pointer-events: auto;
+}
+#ng-minimap.mm-ready:hover { opacity: 1; }
+#ng-minimap.ng-hidden { display: none; }

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeuralGraph</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<!-- Styles -->
+<link rel="stylesheet" href="settings_panel.css" />
+<link rel="stylesheet" href="static/css/design-system.css" />
+<link rel="stylesheet" href="static/css/layout.css" />
+<link rel="stylesheet" href="static/css/chat.css" />
+<link rel="stylesheet" href="static/css/toolbar.css" />
+<link rel="stylesheet" href="static/css/onboarding.css" />
+<link rel="stylesheet" href="static/css/animations.css" />
+<link rel="stylesheet" href="static/css/bottom-panel.css" />
+<link rel="stylesheet" href="static/css/kpi.css" />
+<link rel="stylesheet" href="static/css/bottleneck.css" />
+
+<!-- Electron custom titlebar -->
+<style>
+  #electron-titlebar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 32px;
+    background: #08080f;
+    border-bottom: 1px solid #1a1a2e;
+    z-index: 999999;
+    -webkit-app-region: drag;
+    user-select: none;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .platform-darwin #electron-titlebar { padding-left: 78px; }
+  #electron-titlebar .tb-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: #666688; letter-spacing: 0.08em;
+  }
+  #electron-titlebar .tb-icon { color: #4f8ef7; font-size: 14px; }
+  #electron-titlebar .tb-controls {
+    display: flex; height: 100%;
+    -webkit-app-region: no-drag;
+  }
+  .platform-darwin #electron-titlebar .tb-controls { display: none; }
+  #electron-titlebar .tb-btn {
+    width: 46px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; color: #888899;
+    cursor: pointer; font-size: 11px;
+    transition: background 0.15s, color 0.15s;
+  }
+  #electron-titlebar .tb-btn:hover { background: #1a1a2e; color: #c8c8e8; }
+  #electron-titlebar .tb-btn.tb-close:hover { background: #c0392b; color: #fff; }
+  #electron-titlebar .tb-btn svg {
+    width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none;
+  }
+  body.has-titlebar { padding-top: 32px !important; }
+</style>
+</head>
+<body>
+
+<!-- ── Electron custom titlebar (hidden in browser) ──────── -->
+<div id="electron-titlebar">
+  <!-- Left: logo + network pill -->
+  <div class="tb-title">
+    <span class="tb-icon">&#9670;</span>
+    <span class="tb-name">NeuralGraph</span>
+    <span class="tb-vsep"></span>
+    <div class="tb-network-pill" id="tb-network-pill">
+      <span class="tb-net-dot" id="tb-net-dot"></span>
+      <span id="tb-net-name">Demo Network</span>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+  <!-- Center: live stats (absolute centered) -->
+  <div class="tb-stats-center" id="tb-stats-center">
+    <div class="tb-stat">
+      <span class="tb-stat-val" id="tb-stat-nodes">0</span>
+      <span class="tb-stat-label">nodes</span>
+    </div>
+    <div class="tb-stat-sep"></div>
+    <div class="tb-stat">
+      <span class="tb-stat-val" id="tb-stat-edges">0</span>
+      <span class="tb-stat-label">edges</span>
+    </div>
+    <div class="tb-stat-sep"></div>
+    <div class="tb-stat">
+      <span class="tb-stat-val tb-stat-health" id="tb-stat-health">—</span>
+      <span class="tb-stat-label">health</span>
+    </div>
+  </div>
+  <!-- Right: alerts + window controls -->
+  <div class="tb-right">
+    <div class="tb-alerts" id="tb-alerts" style="display:none">
+      <span class="tb-alerts-dot"></span>
+      <span id="tb-alerts-count">0</span>
+      <span class="tb-alerts-label">alerts</span>
+    </div>
+    <div class="tb-controls">
+    <button class="tb-btn tb-minimize" id="tb-minimize" title="Minimize">
+      <svg viewBox="0 0 12 12"><line x1="1" y1="6" x2="11" y2="6"/></svg>
+    </button>
+    <button class="tb-btn tb-maximize" id="tb-maximize" title="Maximize">
+      <svg viewBox="0 0 12 12" id="tb-max-icon"><rect x="1.5" y="1.5" width="9" height="9" rx="1"/></svg>
+    </button>
+    <button class="tb-btn tb-close" id="tb-close" title="Close">
+      <svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+    </button>
+    </div><!-- /tb-controls -->
+  </div><!-- /tb-right -->
+</div>
+
+<!-- =====================================================
+     APP SHELL — no topbar, full 75 / 25 layout
+     ===================================================== -->
+<div id="app">
+
+  <!-- API-key banner injected here by settings_panel.js -->
+
+  <div id="main">
+
+    <!-- ── GRAPH AREA (flex:1) ─────────────────────────────── -->
+    <div id="graph-area">
+
+      <!-- Three.js canvas container -->
+      <div id="graph-canvas">
+        <!-- renderer.js appends <canvas> here -->
+      </div>
+
+      <!-- HTML label overlay (managed by renderer.js) -->
+      <div id="label-container"></div>
+
+      <!-- Floating node inspector (populated by node_inspector.js) -->
+      <div id="node-inspector-overlay">
+        <div id="node-detail">
+          <p style="font-size:11px;color:#444466;font-style:italic;">Click a node to inspect</p>
+        </div>
+      </div>
+
+      <!-- Bottom panel (injected by bottomPanel.js) -->
+      <div id="bottom-panel" class="bottom-panel" data-collapsed="false">
+        <div class="bottom-panel__tab-bar" id="bp-tab-bar">
+          <button class="bp-tab bp-tab--active" data-tab="activity">
+            <span class="bp-tab__icon">&#9678;</span>
+            Activity Feed
+          </button>
+          <button class="bp-tab" data-tab="kpis">
+            KPI Snapshot
+            <span class="bp-tab__badge" id="kpi-badge" data-count="0">0</span>
+          </button>
+          <button class="bp-tab" data-tab="route">
+            <span class="bp-tab__icon">&#8594;</span>
+            Critical Route
+          </button>
+          <button class="bp-tab" data-tab="alerts">
+            Bottleneck Alerts
+            <span class="bp-tab__badge bp-tab__badge--red" id="alert-badge" data-count="0">0</span>
+          </button>
+          <div class="bp-spacer"></div>
+          <button class="bp-collapse-btn" id="bp-collapse" title="Inklappen">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="bottom-panel__content" id="bp-content"></div>
+      </div>
+
+    </div>
+
+    <!-- ── CHAT PANEL (25%) — built by chatPanel.js ─────── -->
+    <div id="chat-panel"></div>
+
+  </div>
+
+  <!-- ── ENTERPRISE STATUS BAR ─────────────────────────── -->
+  <div id="status-bar" class="status-bar">
+    <div class="sb-item" id="sb-backend">
+      <span class="sb-dot sb-dot--ok"></span>
+      <span class="sb-label">Backend actief</span>
+    </div>
+    <div class="sb-separator"></div>
+    <div class="sb-item" id="sb-model">
+      <span class="sb-label sb-label--muted">Model:</span>
+      <span class="sb-label" id="sb-model-name">—</span>
+    </div>
+    <div class="sb-separator"></div>
+    <div class="sb-item sb-item--warn" id="sb-bottlenecks" style="display:none">
+      <span class="sb-dot sb-dot--warn"></span>
+      <span class="sb-label" id="sb-bottleneck-label">0 bottlenecks</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-item" id="sb-saved-item">
+      <span class="sb-label sb-label--muted">Opgeslagen</span>
+      <span class="sb-label" id="sb-saved-time">—</span>
+    </div>
+    <div class="sb-separator"></div>
+    <div class="sb-item">
+      <span class="sb-label sb-label--muted">v1.0.0</span>
+    </div>
+  </div>
+
+  <!-- ── LEGACY STATUS BAR (compat, hidden) ───────────────── -->
+  <div id="ng-statusbar" style="display:none">
+
+    <!-- Linker sectie: graph metrics -->
+    <div class="ng-sb-section ng-sb-left">
+      <div class="ng-sb-item" id="sb-nodes">
+        <i data-lucide="circle-dot" class="ng-sb-icon"></i>
+        <span id="sb-node-count">0</span>
+        <span class="ng-sb-label">nodes</span>
+      </div>
+      <div class="ng-sb-divider"></div>
+      <div class="ng-sb-item" id="sb-edges">
+        <i data-lucide="git-branch" class="ng-sb-icon"></i>
+        <span id="sb-edge-count">0</span>
+        <span class="ng-sb-label">edges</span>
+      </div>
+      <div class="ng-sb-divider"></div>
+      <div class="ng-sb-item ng-sb-route" id="sb-critical-path" title="Kritieke route lengte">
+        <i data-lucide="git-commit" class="ng-sb-icon"></i>
+        <span id="sb-path-count">—</span>
+        <span class="ng-sb-label">kritieke route</span>
+      </div>
+    </div>
+
+    <!-- Midden sectie: geselecteerde node -->
+    <div class="ng-sb-section ng-sb-center" id="sb-selected-node">
+      <div class="ng-sb-selected-inner" id="sb-selected-content">
+        <span class="ng-sb-no-selection">Geen node geselecteerd</span>
+      </div>
+    </div>
+
+    <!-- Rechter sectie: snelknoppen + status -->
+    <div class="ng-sb-section ng-sb-right">
+      <button class="ng-sb-btn" id="sb-btn-bottleneck" title="Bottlenecks detecteren">
+        <i data-lucide="alert-triangle" class="ng-sb-icon"></i>
+        <span>Analyse</span>
+      </button>
+      <div class="ng-sb-divider"></div>
+      <button class="ng-sb-btn" id="sb-btn-health" title="Health overlay tonen">
+        <i data-lucide="heart-pulse" class="ng-sb-icon"></i>
+        <span>Health</span>
+      </button>
+      <div class="ng-sb-divider"></div>
+      <button class="ng-sb-btn" id="sb-btn-export" title="Exporteer graph JSON">
+        <i data-lucide="download" class="ng-sb-icon"></i>
+        <span>Export</span>
+      </button>
+      <div class="ng-sb-divider"></div>
+      <div class="ng-sb-item ng-sb-save-status" id="sb-save-status">
+        <i data-lucide="check-circle" class="ng-sb-icon ng-sb-icon--ok"></i>
+        <span id="sb-save-label">Opgeslagen</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Hidden compatibility shims (used by autosave, stats) -->
+<div id="stat-nodes" style="display:none">0</div>
+<div id="stat-edges" style="display:none">0</div>
+<div id="stat-updated" style="display:none">—</div>
+<div id="source-list" style="display:none"></div>
+
+<!-- =====================================================
+     UPLOAD MODAL
+     ===================================================== -->
+<div class="modal-backdrop" id="upload-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add Data Source</span>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="drop-zone">
+        <div class="drop-zone-icon">&#8613;</div>
+        <div class="drop-zone-text">Drag &amp; drop files here or click to browse</div>
+        <div class="drop-zone-hint">.txt &nbsp; .pdf &nbsp; .csv</div>
+        <input type="file" id="file-input" accept=".txt,.pdf,.csv" multiple style="display:none" />
+      </div>
+      <div>
+        <div class="paste-area-label">Or paste raw text</div>
+        <textarea class="paste-area" id="paste-input" placeholder="Paste text content here…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn--cancel" id="modal-cancel">Cancel</button>
+      <button class="modal-btn modal-btn--primary" id="modal-submit">Add to Network</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     SETTINGS PANEL  (DOM required by settings_panel.js)
+     ===================================================== -->
+<div class="settings-panel" id="settings-panel">
+  <div class="settings-header">
+    <span class="settings-title">Settings</span>
+    <button class="settings-close" id="settings-close">&times;</button>
+  </div>
+
+  <div class="settings-body" id="settings-body">
+
+    <!-- API key -->
+    <div class="sp-section" id="sp-section-api">
+      <div class="sp-section-title">API Configuration</div>
+      <div class="sp-field">
+        <label class="sp-label" for="sp-api-key">OpenRouter API Key</label>
+        <div class="sp-input-row">
+          <input class="sp-input" type="password" id="sp-api-key"
+                 placeholder="sk-or-…" autocomplete="off" spellcheck="false" />
+          <button class="sp-eye-btn" id="sp-eye-toggle" type="button">&#x1F441;</button>
+        </div>
+        <div class="sp-field-error" id="sp-api-error"></div>
+        <a class="sp-field-link" href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">
+          Get your key at openrouter.ai &rarr;
+        </a>
+      </div>
+      <div class="sp-status-row" id="sp-api-status">
+        <span class="sp-status-dot grey" id="sp-status-dot"></span>
+        <span class="sp-status-text" id="sp-status-text">Not configured</span>
+      </div>
+    </div>
+
+    <!-- Models -->
+    <div class="sp-section" id="sp-section-models">
+      <div class="sp-section-title">AI Models</div>
+      <div class="sp-field">
+        <label class="sp-label" for="sp-graph-model">Graph Builder</label>
+        <div class="sp-field-desc">Extracts entities from documents. Use a smart model here.</div>
+        <select class="sp-select" id="sp-graph-model">
+          <option value="anthropic/claude-sonnet-4-6">Claude Sonnet 4.6 &#9733; Recommended</option>
+          <option value="anthropic/claude-opus-4-6">Claude Opus 4.6 &mdash; Most accurate</option>
+          <option value="openai/gpt-4.1">GPT-4.1</option>
+          <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+          <option value="google/gemini-2.0-flash-001">Gemini Flash 2.0 &#9889; Fast</option>
+          <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B &mdash; Fast &amp; free</option>
+        </select>
+      </div>
+      <div class="sp-field">
+        <label class="sp-label" for="sp-chat-model">Chat Model</label>
+        <div class="sp-field-desc">Answers questions over your network. Can be cheaper.</div>
+        <select class="sp-select" id="sp-chat-model">
+          <option value="google/gemini-2.0-flash-001">Gemini Flash 2.0 &#9889; Recommended</option>
+          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+          <option value="anthropic/claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          <option value="openai/gpt-4.1">GPT-4.1</option>
+          <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+          <option value="meta-llama/llama-3.3-70b-instruct" selected>Llama 3.3 70B &mdash; Fast &amp; free</option>
+        </select>
+      </div>
+      <div class="sp-tip-box">
+        <span>&#x1F4A1;</span>
+        <span>Use a powerful model for building (once) and a fast model for chatting (often).</span>
+      </div>
+    </div>
+
+    <!-- Physics -->
+    <div class="sp-section" id="sp-section-physics">
+      <div class="sp-section-title">Graph Settings</div>
+      <div class="sp-field">
+        <div class="sp-slider-header">
+          <label class="sp-label" for="sp-repulsion">Repulsion Strength</label>
+          <span class="sp-slider-value" id="sp-repulsion-val">1200</span>
+        </div>
+        <input class="sp-slider" type="range" id="sp-repulsion" min="400" max="2400" step="1" value="1200" />
+      </div>
+      <div class="sp-field">
+        <div class="sp-slider-header">
+          <label class="sp-label" for="sp-spring">Spring Length</label>
+          <span class="sp-slider-value" id="sp-spring-val">45</span>
+        </div>
+        <input class="sp-slider" type="range" id="sp-spring" min="20" max="120" step="1" value="45" />
+      </div>
+      <div class="sp-field">
+        <div class="sp-slider-header">
+          <label class="sp-label" for="sp-damping">Damping</label>
+          <span class="sp-slider-value" id="sp-damping-val">0.88</span>
+        </div>
+        <input class="sp-slider" type="range" id="sp-damping" min="0.70" max="0.98" step="0.01" value="0.88" />
+      </div>
+      <button class="sp-reset-btn" id="sp-reset-defaults" type="button">Reset Defaults</button>
+    </div>
+
+  </div><!-- /settings-body -->
+
+  <div class="sp-footer">
+    <div class="sp-save-feedback" id="sp-save-feedback"></div>
+    <div class="sp-footer-btns">
+      <button class="sp-btn sp-btn--cancel" id="sp-cancel"   type="button">Cancel</button>
+      <button class="sp-btn sp-btn--test"   id="sp-test-key" type="button">Test verbinding</button>
+      <button class="sp-btn sp-btn--save"   id="sp-save"     type="button">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     THREE.JS  r158
+     ===================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+
+<!-- =====================================================
+     CORE 3D SYSTEM  (order matters)
+     ===================================================== -->
+<script src="graphPhysics.js?v=3"></script>
+<script src="dragNodes.js?v=4"></script>
+<script src="static/js/nodes.js?v=10"></script>
+<script src="static/js/edges.js?v=17"></script>
+<script src="static/js/hover.js?v=6"></script>
+<script src="static/js/renderer.js?v=12"></script>
+
+<!-- =====================================================
+     UI MODULES
+     ===================================================== -->
+<script src="settings_panel.js"></script>
+<script src="upload_panel.js"></script>
+<script src="autosave.js"></script>
+<script src="graph_context_menu.js"></script>
+<script src="node_editor.js"></script>
+<script src="add_node.js"></script>
+<script src="connection_drawer.js"></script>
+<script src="node_inspector.js"></script>
+
+<!-- =====================================================
+     CHAT PANEL
+     ===================================================== -->
+<script src="static/js/chatPanel.js?v=3"></script>
+
+<!-- =====================================================
+     POLISH MODULES
+     ===================================================== -->
+<script src="minimap.js"></script>
+<script src="toolbar.js?v=9"></script>
+<script src="statusbar.js"></script>
+<script src="static/js/onboarding.js"></script>
+<script src="static/js/bottomPanel.js"></script>
+<script src="static/js/statusBar.js"></script>
+<!-- =====================================================
+     MEGA-UPGRADE MODULES
+     ===================================================== -->
+<script src="static/js/nodeIntelligence.js"></script>
+<script src="static/js/kpiManager.js"></script>
+<script src="static/js/measurementPanel.js"></script>
+<script src="static/js/trendAnalysis.js"></script>
+<script src="static/js/bottleneckDashboard.js"></script>
+<script src="static/js/reportExport.js"></script>
+<script src="testData.js"></script>
+<script src="static/js/worldManager.js"></script>
+
+<!-- =====================================================
+     INLINE WIRING — upload modal + keyboard shortcuts
+     ===================================================== -->
+<script>
+(function () {
+    "use strict";
+
+    // ── Upload modal ──────────────────────────────────────────────────────
+    var uploadModal = document.getElementById("upload-modal");
+    var dropZone    = document.getElementById("drop-zone");
+    var fileInput   = document.getElementById("file-input");
+    var pasteInput  = document.getElementById("paste-input");
+    var modalClose  = document.getElementById("modal-close");
+    var modalCancel = document.getElementById("modal-cancel");
+
+    function openUpload()  { uploadModal.classList.add("active"); }
+    function closeUpload() {
+        uploadModal.classList.remove("active");
+        pasteInput.value = "";
+        fileInput.value  = "";
+        if (dropZone) {
+            var zt = dropZone.querySelector(".drop-zone-text");
+            if (zt) zt.textContent = "Drag & drop files here or click to browse";
+        }
+    }
+
+    // Expose opener for chat panel's "Add Data" trigger
+    window.openUploadModal = openUpload;
+
+    if (modalClose)  modalClose.addEventListener("click",  closeUpload);
+    if (modalCancel) modalCancel.addEventListener("click", closeUpload);
+    if (uploadModal) uploadModal.addEventListener("click", function (e) {
+        if (e.target === uploadModal) closeUpload();
+    });
+
+    // Drop zone click → file picker
+    if (dropZone) {
+        dropZone.addEventListener("click", function () { fileInput.click(); });
+        dropZone.addEventListener("dragover",  function (e) { e.preventDefault(); dropZone.classList.add("dragover"); });
+        dropZone.addEventListener("dragleave", function ()  { dropZone.classList.remove("dragover"); });
+        dropZone.addEventListener("drop", function (e) {
+            e.preventDefault();
+            dropZone.classList.remove("dragover");
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                var zt = dropZone.querySelector(".drop-zone-text");
+                if (zt) zt.textContent = e.dataTransfer.files.length + " file(s) selected";
+            }
+        });
+    }
+    if (fileInput) {
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length) {
+                var zt = dropZone && dropZone.querySelector(".drop-zone-text");
+                if (zt) zt.textContent = fileInput.files.length + " file(s) selected";
+            }
+        });
+    }
+
+    // ── Settings panel open/close ─────────────────────────────────────────
+    var settingsPanel = document.getElementById("settings-panel");
+    var settingsClose = document.getElementById("settings-close");
+    if (settingsClose) {
+        settingsClose.addEventListener("click", function () {
+            settingsPanel.classList.remove("active");
+        });
+    }
+
+    // ── Keyboard shortcuts ────────────────────────────────────────────────
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            if (uploadModal  && uploadModal.classList.contains("active"))  closeUpload();
+            else if (settingsPanel && settingsPanel.classList.contains("active")) {
+                settingsPanel.classList.remove("active");
+            }
+        }
+        // Ctrl/Cmd + U → open upload
+        if ((e.ctrlKey || e.metaKey) && e.key === "u") {
+            e.preventDefault();
+            openUpload();
+        }
+    });
+
+    // ── Lucide icons init ─────────────────────────────────────────────────
+    if (window.lucide) window.lucide.createIcons();
+
+})();
+</script>
+
+<!-- ── Electron titlebar wiring ──────────────────────────── -->
+<script>
+(function () {
+    if (!window.electronAPI) return;
+
+    // Show titlebar and push content down
+    var tb = document.getElementById('electron-titlebar');
+    if (tb) tb.style.display = 'flex';
+    document.body.classList.add('has-titlebar');
+    document.body.classList.add('platform-' + window.electronAPI.platform);
+
+    // Window control buttons
+    var btnMin   = document.getElementById('tb-minimize');
+    var btnMax   = document.getElementById('tb-maximize');
+    var btnClose = document.getElementById('tb-close');
+
+    if (btnMin)   btnMin.addEventListener('click',   function () { window.electronAPI.minimize(); });
+    if (btnMax)   btnMax.addEventListener('click',   function () { window.electronAPI.maximize(); });
+    if (btnClose) btnClose.addEventListener('click', function () { window.electronAPI.close(); });
+
+    // Toggle maximize/restore icon
+    if (window.electronAPI.onMaximizeChange) {
+        window.electronAPI.onMaximizeChange(function (isMax) {
+            var icon = document.getElementById('tb-max-icon');
+            if (!icon) return;
+            if (isMax) {
+                icon.innerHTML = '<rect x="3" y="0.5" width="8" height="8" rx="1" fill="none"/>' +
+                                 '<rect x="0.5" y="3" width="8" height="8" rx="1" fill="none"/>';
+            } else {
+                icon.innerHTML = '<rect x="1.5" y="1.5" width="9" height="9" rx="1"/>';
+            }
+        });
+    }
+})();
+</script>
+
+</body>
+</html>

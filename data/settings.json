@@ -1,0 +1,10 @@
+{
+  "openrouter_api_key_encrypted": "",
+  "graph_model": "anthropic/claude-sonnet-4-5",
+  "chat_model": "google/gemini-2.0-flash-001",
+  "physics": {
+    "repulsion_strength": 1200.0,
+    "spring_length": 45.0,
+    "damping": 0.88
+  }
+}

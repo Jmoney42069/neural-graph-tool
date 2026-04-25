@@ -1,0 +1,165 @@
+/* FILE: design-system.css
+   SCOPE: CSS custom properties, glass mixins, typography, reset, scrollbars
+   DEPENDS: Google Fonts — IBM Plex Mono (loaded in HTML) */
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  /* Achtergronden */
+  --bg-void:        #000005;
+  --bg-base:        #08080f;
+  --bg-surface:     #0d0d1a;
+  --bg-elevated:    #12121f;
+  --bg-hover:       #181830;
+
+  /* Glassmorphism */
+  --glass-bg:       rgba(13, 13, 26, 0.65);
+  --glass-border:   rgba(255, 255, 255, 0.06);
+  --glass-blur:     blur(24px) saturate(180%);
+  --glass-shine:    rgba(255, 255, 255, 0.03);
+
+  /* Accenten */
+  --accent-blue:    #4f8ef7;
+  --accent-purple:  #b44ff7;
+  --accent-cyan:    #4ff7f0;
+
+  /* Gradient accenten */
+  --gradient-primary: linear-gradient(135deg, #4f8ef7 0%, #b44ff7 100%);
+  --gradient-glow:    radial-gradient(ellipse at center, rgba(79,142,247,0.15) 0%, transparent 70%);
+
+  /* Tekst */
+  --text-primary:   #e8e8ff;
+  --text-secondary: #6868aa;
+  --text-muted:     #2e2e55;
+
+  /* Legacy compat aliases (used by settings_panel.css, modals, etc.) */
+  --bg:             #000005;
+  --bg-panel:       #08080f;
+  --border:         rgba(255, 255, 255, 0.06);
+  --text:           #e8e8ff;
+  --text-dim:       #2e2e55;
+  --accent:         #4f8ef7;
+  --accent-glow:    rgba(79,142,247,0.08);
+  --danger:         #f74f6a;
+  --success:        #4ff7a0;
+  --radius:         8px;
+  --font:           'IBM Plex Mono', monospace;
+
+  /* Node category kleuren */
+  --color-product:    #4f8ef7;
+  --color-process:    #f7a04f;
+  --color-compliance: #f74f6a;
+  --color-finance:    #4ff7a0;
+  --color-customer:   #b44ff7;
+  --color-person:     #ff9f7f;
+  --color-system:     #7fcfff;
+  --color-location:   #ffcf7f;
+  --color-concept:    #e0e0ff;
+  --color-general:    #e0e0ff;
+
+  /* Timing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Typography */
+  --font-mono: 'IBM Plex Mono', monospace;
+  --text-xs:   10px;
+  --text-sm:   12px;
+  --text-base: 13px;
+  --text-lg:   15px;
+  --text-xl:   18px;
+
+  /* ── Enterprise upgrade tokens ──────────────────────────── */
+
+  /* Typografie upgrade */
+  --font-ui:   'DM Sans', system-ui, sans-serif;
+  --font-data: 'DM Mono', 'IBM Plex Mono', monospace;
+
+  /* Spacing grid (8px basis) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Borders enterprise-stijl */
+  --border-subtle:  1px solid rgba(255,255,255,0.04);
+  --border-default: 1px solid rgba(255,255,255,0.07);
+  --border-strong:  1px solid rgba(255,255,255,0.12);
+  --border-accent:  1px solid rgba(79,142,247,0.3);
+
+  /* Status kleuren */
+  --status-ok:    #4ff7a0;
+  --status-warn:  #f7c04f;
+  --status-error: #f74f6a;
+  --status-info:  #4f8ef7;
+  --status-muted: #6868aa;
+
+  /* Panel dimensies */
+  --titlebar-h:     32px;
+  --toolbar-w:      44px;
+  --chat-w:         25vw;
+  --bottom-panel-h: 20vh;
+  --statusbar-h:    22px;
+  --tab-bar-h:      32px;
+
+  /* Surfaces enterprise-niveau */
+  --surface-panel:    rgba(10,10,20,0.95);
+  --surface-elevated: rgba(15,15,28,0.98);
+  --surface-input:    rgba(255,255,255,0.04);
+  --surface-hover:    rgba(255,255,255,0.06);
+
+  /* Radius */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-pill: 999px;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────── */
+::-webkit-scrollbar            { width: 3px; height: 3px; }
+::-webkit-scrollbar-track      { background: transparent; }
+::-webkit-scrollbar-thumb      { background: rgba(255,255,255,0.08); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,0.14); }
+
+/* ── Glass mixin as utility class ──────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Global button reset ───────────────────────────────────── */
+button {
+  font-family: var(--font-ui);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* ── Selection ─────────────────────────────────────────────── */
+::selection {
+  background: rgba(79, 142, 247, 0.3);
+  color: var(--text-primary);
+}

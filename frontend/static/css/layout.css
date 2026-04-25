@@ -1,0 +1,725 @@
+/* FILE: layout.css
+   SCOPE: App shell, titlebar, graph area, chat panel container, node labels, inspector, modals
+   DEPENDS: design-system.css variables */
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-void);
+}
+
+/* API-key banner (injected by settings_panel.js) */
+#ng-api-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: rgba(247,160,79,0.06);
+  border-bottom: 1px solid rgba(247,160,79,0.15);
+  font-size: var(--text-xs);
+  color: #f7a04f;
+  z-index: 500;
+  flex-shrink: 0;
+  backdrop-filter: blur(12px);
+  letter-spacing: 0.04em;
+}
+.ng-banner-text  { flex: 1; }
+.ng-banner-cta   {
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; padding: 4px 12px;
+  background: transparent; border: 1px solid rgba(247,160,79,0.3); border-radius: 4px;
+  color: #f7a04f; cursor: pointer; transition: background 150ms;
+}
+.ng-banner-cta:hover { background: rgba(247,160,79,0.1); }
+.ng-banner-dismiss {
+  background: transparent; border: none; color: #f7a04f;
+  font-size: 16px; cursor: pointer; padding: 0 4px; line-height: 1;
+}
+
+/* ============================================================
+   CUSTOM TITLEBAR (Electron)
+   ============================================================ */
+#electron-titlebar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 32px;
+  background: rgba(8, 8, 15, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 999999;
+  -webkit-app-region: drag;
+  user-select: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  /* Subtle gradient shimmer at top */
+  background-image: linear-gradient(
+    180deg,
+    rgba(79, 142, 247, 0.04) 0%,
+    transparent 100%
+  );
+}
+.platform-darwin #electron-titlebar { padding-left: 78px; }
+
+/* Titlebar logo */
+#electron-titlebar .tb-title {
+  display: flex; align-items: center; gap: 8px;
+}
+#electron-titlebar .tb-icon {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 14px;
+}
+#electron-titlebar .tb-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+/* Stats badge in titlebar */
+.titlebar-stats {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-left: 12px;
+  letter-spacing: 0.08em;
+  -webkit-app-region: no-drag;
+}
+
+/* Window controls */
+#electron-titlebar .tb-controls {
+  display: flex;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+.platform-darwin #electron-titlebar .tb-controls { display: none; }
+
+#electron-titlebar .tb-btn {
+  width: 28px; height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 150ms, color 150ms;
+}
+#electron-titlebar .tb-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+}
+#electron-titlebar .tb-btn.tb-close:hover {
+  background: rgba(192, 57, 43, 0.8);
+  color: white;
+}
+#electron-titlebar .tb-btn svg {
+  width: 12px; height: 12px;
+  stroke: currentColor; stroke-width: 1.5; fill: none;
+}
+
+body.has-titlebar { padding-top: 32px !important; }
+
+/* ── Titlebar: separator + network pill ─────────────────── */
+#electron-titlebar .tb-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+#electron-titlebar .tb-vsep {
+  width: 1px; height: 14px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+#electron-titlebar .tb-network-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: default;
+  -webkit-app-region: no-drag;
+}
+#electron-titlebar .tb-network-pill svg { color: var(--text-muted); }
+#electron-titlebar .tb-net-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--status-muted);
+  flex-shrink: 0;
+}
+#electron-titlebar .tb-net-dot.active { background: var(--status-ok); }
+
+/* ── Titlebar: center stats (absolute centered) ─────────── */
+#electron-titlebar .tb-stats-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-app-region: no-drag;
+}
+#electron-titlebar .tb-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+#electron-titlebar .tb-stat-val {
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+#electron-titlebar .tb-stat-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+#electron-titlebar .tb-stat-sep {
+  width: 1px; height: 10px;
+  background: rgba(255,255,255,0.06);
+}
+#electron-titlebar .tb-stat-health { color: var(--status-ok); }
+#electron-titlebar .tb-stat-health.warn  { color: var(--status-warn); }
+#electron-titlebar .tb-stat-health.error { color: var(--status-error); }
+
+/* ── Titlebar: alerts badge ─────────────────────────────── */
+#electron-titlebar .tb-alerts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(247,79,106,0.12);
+  border: 1px solid rgba(247,79,106,0.25);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+#electron-titlebar .tb-alerts-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--status-error);
+  animation: sb-blink 1.5s infinite;
+}
+#electron-titlebar .tb-alerts-label,
+#electron-titlebar .tb-alerts span {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--status-error);
+}
+
+/* ============================================================
+   MAIN LAYOUT — flex row
+   ============================================================ */
+#main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ============================================================
+   GRAPH AREA (flex:1, column — canvas + bottom panel)
+   ============================================================ */
+#graph-area {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-void);
+  overflow: hidden;
+}
+
+#graph-canvas {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+#graph-canvas canvas:not(#ng-minimap) {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── Node label overlay ─────────────────────────────────────── */
+#label-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.node-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  background: rgba(8, 8, 15, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 5px;
+  padding: 3px 9px;
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  display: none;            /* completely removed from layout + compositing */
+  transform: translateX(-50%);
+}
+.node-label.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* Colour marker dot on label */
+.node-label::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--node-color, var(--accent-blue));
+  margin-right: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 6px var(--node-color, var(--accent-blue));
+}
+
+/* ── Node inspector overlay ─────────────────────────────────── */
+#node-inspector-overlay {
+  position: absolute;
+  bottom: 56px;
+  left: 16px;
+  width: 260px;
+  max-height: 420px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 8px 32px rgba(0,0,0,0.5);
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 250ms var(--ease-out-expo),
+              transform 250ms var(--ease-out-expo);
+  z-index: 50;
+}
+#node-inspector-overlay.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#node-detail { padding: 14px 16px; }
+
+/* Hidden compat elements */
+#stat-nodes, #stat-edges, #stat-updated, #source-list { display: none; }
+
+/* ============================================================
+   CHAT PANEL (fixed 300px)
+   ============================================================ */
+#chat-panel {
+  flex: 0 0 var(--chat-w);
+  width: var(--chat-w);
+  min-width: 240px;
+  height: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-left: 1px solid var(--glass-border);
+  box-shadow:
+    inset 1px 0 0 var(--glass-shine),
+    -8px 0 32px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-ui);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Subtle gradient overlay for depth */
+#chat-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(79, 142, 247, 0.03) 0%,
+    transparent 30%,
+    rgba(180, 79, 247, 0.02) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure chat children sit above the gradient overlay */
+#chat-panel > * { position: relative; z-index: 1; }
+
+/* ============================================================
+   UPLOAD MODAL
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,5,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms var(--ease-out-expo),
+              visibility 250ms var(--ease-out-expo);
+}
+.modal-backdrop.active { opacity: 1; visibility: visible; }
+
+.modal {
+  width: 480px;
+  max-width: 90vw;
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  transform: translateY(12px) scale(0.98);
+  transition: transform 300ms var(--ease-out-expo);
+}
+.modal-backdrop.active .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--glass-border);
+}
+.modal-title {
+  font-size: var(--text-xs); font-weight: 500; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text-primary);
+}
+.modal-close {
+  font-family: var(--font-mono); font-size: 14px; background: transparent;
+  border: none; color: var(--text-muted); cursor: pointer;
+  padding: 4px; line-height: 1; transition: color 150ms;
+}
+.modal-close:hover { color: var(--text-primary); }
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.drop-zone {
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 200ms, background 200ms;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--accent-blue);
+  background: rgba(79,142,247,0.04);
+}
+.drop-zone-icon  { font-size: 16px; color: var(--text-muted); margin-bottom: 8px; }
+.drop-zone-text  { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.drop-zone-hint  { font-size: var(--text-xs); color: var(--text-muted); }
+
+.paste-area-label {
+  font-size: var(--text-xs); letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+}
+.paste-area {
+  font-family: var(--font-mono); font-size: 11px; width: 100%;
+  min-height: 80px; padding: 12px; background: var(--bg-void);
+  border: 1px solid var(--glass-border); border-radius: 8px;
+  color: var(--text-primary); resize: vertical; outline: none;
+  transition: border-color 200ms;
+}
+.paste-area::placeholder { color: var(--text-muted); }
+.paste-area:focus { border-color: rgba(79,142,247,0.4); }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--glass-border);
+}
+.modal-btn {
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 8px 16px; border-radius: 6px;
+  cursor: pointer; transition: all 150ms var(--ease-out-expo);
+}
+.modal-btn--cancel {
+  background: transparent; border: 1px solid var(--glass-border); color: var(--text-secondary);
+}
+.modal-btn--cancel:hover { background: var(--bg-hover); color: var(--text-primary); }
+.modal-btn--primary {
+  background: var(--gradient-primary); border: 1px solid transparent;
+  color: #fff; font-weight: 600;
+  box-shadow: 0 4px 16px rgba(79,142,247,0.25);
+}
+.modal-btn--primary:hover {
+  box-shadow: 0 4px 20px rgba(79,142,247,0.4);
+  transform: translateY(-1px);
+}
+
+/* Hide legacy statusbar (kept for JS compat) */
+#ng-statusbar { display: none !important; }
+
+/* ============================================================
+   ENTERPRISE STATUS BAR (22px)
+   ============================================================ */
+.status-bar {
+  height: var(--statusbar-h);
+  background: rgba(5,5,12,0.98);
+  border-top: var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  flex-shrink: 0;
+  gap: 0;
+  z-index: 200;
+  user-select: none;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+}
+.sb-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sb-dot--ok    { background: var(--status-ok); }
+.sb-dot--warn  { background: var(--status-warn); }
+.sb-dot--error { background: var(--status-error); animation: sb-blink 1.5s infinite; }
+@keyframes sb-blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sb-label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.sb-label--muted { color: var(--text-muted); }
+.sb-separator {
+  width: 1px; height: 12px;
+  background: rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.sb-spacer { flex: 1; }
+  flex-shrink: 0;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  background: rgba(6, 6, 12, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+  padding: 0 14px;
+  gap: 0;
+  z-index: 200;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  user-select: none;
+  box-shadow: 0 -1px 0 rgba(79, 142, 247, 0.06);
+}
+
+.ng-sb-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ng-sb-left  { flex: 0 0 auto; gap: 4px; }
+.ng-sb-center { flex: 1; justify-content: center; }
+.ng-sb-right { flex: 0 0 auto; gap: 4px; margin-left: auto; }
+
+.ng-sb-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  height: 22px;
+  border-radius: 4px;
+}
+.ng-sb-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.ng-sb-label {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ng-sb-value {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+}
+.ng-sb-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.065);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+.ng-sb-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+.ng-sb-icon--ok  { color: #4ff7a0; opacity: 0.9; }
+.ng-sb-icon--warn { color: #f7a04f; opacity: 0.9; }
+
+/* Status-bar buttons */
+.ng-sb-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.38);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 2px 8px;
+  height: 22px;
+  border-radius: 4px;
+  transition: background 150ms, color 150ms;
+  white-space: nowrap;
+}
+.ng-sb-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary);
+}
+.ng-sb-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+.ng-sb-btn-icon {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Save indicator */
+#sb-save-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 10px;
+  padding: 0 6px;
+  height: 22px;
+}
+#sb-save-status.unsaved {
+  color: #f7a04f;
+}
+#sb-save-status.saved {
+  color: #4ff7a0;
+}
+
+/* Center — selected node display */
+.ng-sb-no-selection {
+  color: rgba(255, 255, 255, 0.14);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+.ng-sb-selected-node-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ng-sb-node-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+.ng-sb-node-label {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.ng-sb-node-cat {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ng-sb-node-desc {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 10px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.modal-btn--primary:hover {
+  box-shadow: 0 4px 20px rgba(79,142,247,0.4);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   SETTINGS PANEL  (overlay from the right)
+   ============================================================ */
+.settings-panel, #settings-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 25% !important;
+  min-width: 320px !important;
+  height: 100% !important;
+  background: var(--bg-base);
+  border-left: 1px solid var(--glass-border);
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 300ms var(--ease-out-expo);
+  overflow: hidden;
+}
+.settings-panel.active, #settings-panel.active {
+  transform: translateX(0) !important;
+}

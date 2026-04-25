@@ -1,0 +1,57 @@
+appId: com.neuralgraph.app
+productName: NeuralGraph
+copyright: Copyright © 2024 NeuralGraph
+
+directories:
+  output: dist
+
+# Only package Electron code + the loading screen (FastAPI serves the actual frontend)
+files:
+  - electron/**/*
+  - frontend/loading.html
+  - package.json
+
+# The PyInstaller binary (built separately) goes into resources/backend/
+extraResources:
+  - from: backend-dist/
+    to: backend
+    filter:
+      - "**/*"
+
+# ── Windows ──────────────────────────────────────────────
+win:
+  icon: assets/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: NeuralGraph
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+
+# ── macOS ────────────────────────────────────────────────
+mac:
+  icon: assets/icon.icns
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+
+dmg:
+  title: Install NeuralGraph
+
+# ── Linux ────────────────────────────────────────────────
+linux:
+  icon: assets/icon.png
+  category: Utility
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]

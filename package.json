@@ -1,0 +1,21 @@
+{
+  "name": "neuralgraph",
+  "version": "1.0.0",
+  "description": "NeuralGraph — AI-powered 3D knowledge graph visualizer",
+  "main": "electron/main.js",
+  "author": "NeuralGraph",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron .",
+    "build:backend:win": "scripts\\build-backend.bat",
+    "build:backend:unix": "bash scripts/build-backend.sh",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
+}

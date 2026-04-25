@@ -1,0 +1,212 @@
+/* FILE: animations.css
+   SCOPE: All keyframe animations and transition utility classes
+   DEPENDS: design-system.css variables */
+
+/* ============================================================
+   ENTRANCE ANIMATIONS
+   ============================================================ */
+
+/* Chat panel slide-in from right */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+#chat-panel {
+  animation: slide-in-right 500ms var(--ease-out-expo) both;
+  animation-delay: 200ms;
+}
+
+/* Canvas fade-in */
+@keyframes canvas-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+#graph-canvas {
+  animation: canvas-fade-in 600ms ease both;
+  animation-delay: 100ms;
+}
+
+/* ============================================================
+   NODE ANIMATIONS (used by JS via classList)
+   ============================================================ */
+
+/* Node spawn — applied via class on the Group wrapper when needed */
+@keyframes node-spawn {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.4); opacity: 1; }
+  75%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Node remove pulse */
+@keyframes node-remove {
+  0%   { transform: scale(1); opacity: 1; }
+  40%  { transform: scale(1.2); }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ============================================================
+   PULSE EFFECTS
+   ============================================================ */
+
+/* Highlight pulse — when AI mentions a node */
+@keyframes highlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,142,247,0); }
+  50%      { box-shadow: 0 0 20px 4px rgba(79,142,247,0.3); }
+}
+
+/* Glow breathing — for onboarding nodes */
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface) 25%,
+    var(--bg-elevated) 50%,
+    var(--bg-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ============================================================
+   TRANSITION UTILITIES
+   ============================================================ */
+
+.transition-fast { transition: all 150ms var(--ease-out-expo); }
+.transition-base { transition: all 250ms var(--ease-out-expo); }
+.transition-slow { transition: all 400ms var(--ease-out-expo); }
+
+/* ============================================================
+   HOVER LIFT — reusable on buttons / cards
+   ============================================================ */
+.hover-lift {
+  transition:
+    background 150ms var(--ease-out-expo),
+    transform 100ms var(--ease-out-expo),
+    box-shadow 150ms var(--ease-out-expo),
+    border-color 150ms var(--ease-out-expo);
+}
+.hover-lift:hover { transform: translateY(-1px); }
+.hover-lift:active { transform: translateY(0) scale(0.97); }
+
+/* ============================================================
+   ENTERPRISE TOAST NOTIFICATIONS
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: calc(var(--statusbar-h) + var(--space-3));
+  right: var(--space-4);
+  background: var(--surface-elevated);
+  border: var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  z-index: 9999;
+  animation: toast-in 0.2s var(--ease-spring) forwards;
+  pointer-events: none;
+  max-width: 320px;
+}
+.toast--success { border-left: 3px solid var(--status-ok); }
+.toast--error   { border-left: 3px solid var(--status-error); }
+.toast--warning { border-left: 3px solid var(--status-warn); }
+.toast--info    { border-left: 3px solid var(--status-info); }
+
+.toast__icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.toast--success .toast__icon { color: var(--status-ok); }
+.toast--error   .toast__icon { color: var(--status-error); }
+.toast--warning .toast__icon { color: var(--status-warn); }
+.toast--info    .toast__icon { color: var(--status-info); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(4px) scale(0.98); }
+}
+
+/* ============================================================
+   LOADING SKELETON
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.07) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.5s infinite;
+  border-radius: var(--radius-md);
+  color: transparent;
+  user-select: none;
+}
+@keyframes skeleton-wave {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-line {
+  height: 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+}
+.skeleton-line--short { width: 40%; }
+.skeleton-line--med   { width: 65%; }
+.skeleton-line--full  { width: 100%; }
+
+/* ============================================================
+   NODE DRAG CURSOR
+   ============================================================ */
+.ng-drag-active { cursor: grabbing !important; }
+
+/* ============================================================
+   NODE HOVER PANEL
+   ============================================================ */
+@keyframes hover-panel-in {
+  from { opacity: 0; transform: translateX(4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.ng-hover-panel {
+  position: fixed;
+  z-index: 500;
+  pointer-events: none;
+  animation: hover-panel-in 120ms var(--ease-out-expo, cubic-bezier(0.16,1,0.3,1)) both;
+
+  min-width: 170px;
+  max-width: 230px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--surface-elevated, rgba(18,18,32,0.97));
+  border: 1px solid var(--border-default, rgba(255,255,255,0.1));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05) inset;
+  font-family: var(--font-ui, 'DM Sans', sans-serif);
+  font-size: 11px;
+  color: var(--text-primary, #e8e8f0);
+  backdrop-filter: blur(12px);
+}
+
+.ng-hover-panel * { pointer-events: none; }
+.ng-hover-panel button { pointer-events: all; }

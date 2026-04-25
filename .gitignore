@@ -1,0 +1,64 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.spec
+
+# ── Virtual environments ─────────────────────────────────
+venv/
+.venv/
+env/
+.env
+
+# ── Secrets & keys ──────────────────────────────────────
+data/.secret.key
+.secret.key
+*.key
+
+# ── Personal / world data ────────────────────────────────
+# Ignore user-loaded graph content (not graph.json schema)
+# data/graph.json is committed as an empty template; the user's
+# actual world data is personal and should NOT be committed.
+# Uncomment the line below if you want git to stop tracking
+# changes to graph.json after the initial commit:
+# data/graph.json
+
+# Runtime / processed data
+data/processed/*
+data/raw/*
+!data/processed/.gitkeep
+!data/raw/.gitkeep
+
+# Encrypted API key inside settings.json is regenerated per install;
+# you may want to ignore the whole file after first commit:
+# data/settings.json
+
+# ── Logs ────────────────────────────────────────────────
+uvicorn_out.txt
+uvicorn_err.txt
+*.log
+
+# ── Node / Electron ──────────────────────────────────────
+node_modules/
+dist-electron/
+release/
+out/
+*.snap
+
+# ── OS junk ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user

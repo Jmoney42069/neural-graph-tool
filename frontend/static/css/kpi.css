@@ -1,0 +1,323 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   kpi.css  —  KPI Generatie & Goedkeuring Panelen
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Overlay */
+.kpi-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 10, 0.72);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+/* Base panel */
+.kpi-panel {
+    background: rgba(14, 14, 36, 0.97);
+    border: 1px solid rgba(100, 100, 220, 0.3);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    min-width: 520px;
+    max-width: 860px;
+    width: 90vw;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "IBM Plex Mono", monospace;
+    overflow: hidden;
+}
+
+/* Header */
+.kpi-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid rgba(100, 100, 220, 0.2);
+    flex-shrink: 0;
+}
+
+.kpi-panel-header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #c8c8ff;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kpi-panel-header h2 svg {
+    width: 16px;
+    height: 16px;
+    color: #7878ff;
+}
+
+.kpi-close-btn {
+    border: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: #aaa;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.kpi-close-btn:hover {
+    background: rgba(255, 80, 80, 0.2);
+    color: #ff6060;
+}
+
+.kpi-close-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Progress area */
+.kpi-progress-area {
+    padding: 20px 22px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.kpi-progress-label {
+    font-size: 12px;
+    color: #9090d0;
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+}
+
+.kpi-progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.kpi-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7878ff, #00ff88);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.kpi-node-log {
+    max-height: 260px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+
+.kpi-log-item {
+    font-size: 11px;
+    color: #70d080;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Approval table */
+.kpi-approval-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 12px 22px;
+}
+
+.kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    color: #c0c0e0;
+}
+
+.kpi-table thead tr {
+    background: rgba(100, 100, 200, 0.15);
+    border-bottom: 1px solid rgba(100, 100, 200, 0.25);
+}
+
+.kpi-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: #8080c0;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.kpi-node-row td {
+    padding: 10px 10px 4px;
+    color: #e0e0ff;
+    font-weight: 600;
+    font-size: 12px;
+    border-top: 1px solid rgba(100, 100, 200, 0.2);
+}
+
+.kpi-kpi-row td {
+    padding: 5px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #b0b0d0;
+}
+
+.kpi-kpi-row:hover td {
+    background: rgba(100, 100, 200, 0.08);
+}
+
+.kpi-kpi-row input[type="checkbox"] {
+    accent-color: #7878ff;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.kpi-meta {
+    color: #707090;
+    font-size: 11px;
+}
+
+/* Badges */
+.kpi-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.kpi-cat-doorlooptijd   { background: rgba(120, 120, 255, 0.25); color: #9090ff; }
+.kpi-cat-kwaliteit      { background: rgba(0, 200, 120, 0.2);    color: #00cc78; }
+.kpi-cat-efficiency     { background: rgba(255, 180, 0, 0.2);    color: #ffb800; }
+.kpi-cat-klanttevredenheid { background: rgba(255, 100, 180, 0.2); color: #ff80c0; }
+.kpi-cat-financieel     { background: rgba(0, 180, 255, 0.2);    color: #00ccff; }
+.kpi-cat-other          { background: rgba(150, 150, 150, 0.15); color: #aaa; }
+
+/* Node KPI panel */
+.kpi-node-kpis {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kpi-node-kpi {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(100, 100, 220, 0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr 60px;
+    grid-template-rows: auto auto auto;
+    gap: 6px 12px;
+    align-items: start;
+}
+
+.kpi-node-kpi-title {
+    font-weight: 600;
+    color: #d0d0ff;
+    font-size: 13px;
+}
+
+.kpi-node-kpi-desc {
+    color: #808090;
+    font-size: 11px;
+    grid-row: 2;
+}
+
+.kpi-node-kpi-meta {
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: #909090;
+}
+
+.kpi-gauge {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    justify-self: center;
+}
+
+.kpi-empty {
+    text-align: center;
+    color: #606070;
+    font-size: 13px;
+    padding: 30px;
+}
+
+/* Action bar */
+.kpi-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid rgba(100, 100, 220, 0.15);
+    flex-shrink: 0;
+}
+
+.kpi-btn-primary {
+    background: linear-gradient(135deg, #4444cc, #7878ff);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 12px;
+    font-family: "IBM Plex Mono", monospace;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.kpi-btn-primary:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.kpi-btn-primary svg {
+    width: 14px;
+    height: 14px;
+}
+
+.kpi-btn-secondary {
+    background: rgba(255, 255, 255, 0.07);
+    color: #c0c0e0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 12px;
+    font-family: "IBM Plex Mono", monospace;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+}
+
+.kpi-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.kpi-btn-secondary svg {
+    width: 14px;
+    height: 14px;
+}

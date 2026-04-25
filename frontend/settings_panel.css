@@ -1,0 +1,545 @@
+/**
+ * settings_panel.css
+ * ─────────────────────────────────────────────────────────────────────────
+ * Styles specific to the NeuralGraph settings panel and startup banner.
+ * Extends the existing dark theme from index.html.
+ * All sizes and spacing follow the app's 8px grid.
+ *
+ * Sections:
+ *   1. PANEL SHELL OVERRIDE
+ *   2. SCROLLABLE BODY
+ *   3. SECTIONS
+ *   4. FORM CONTROLS (inputs, selects)
+ *   5. API KEY EYE TOGGLE
+ *   6. STATUS INDICATOR
+ *   7. FIELD ERRORS AND LINKS
+ *   8. SLIDERS
+ *   9. TIP BOX
+ *  10. FOOTER & BUTTONS
+ *  11. STARTUP BANNER
+ */
+
+/* =============================================================
+   1. PANEL SHELL OVERRIDE
+   (extends .settings-panel from index.html inline CSS)
+   ============================================================= */
+
+/* Bump transition to 250 ms per spec, make panel scrollable */
+#settings-panel {
+    transition: transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;     /* children handle their own scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+/* =============================================================
+   2. SCROLLABLE BODY
+   ============================================================= */
+
+#settings-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* =============================================================
+   3. SECTIONS
+   ============================================================= */
+
+.sp-section {
+    padding: 20px;
+    border-bottom: 1px solid #1e1e2e;
+}
+
+.sp-section-title {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4a4a6a;
+    margin-bottom: 16px;
+}
+
+.sp-field {
+    margin-bottom: 16px;
+}
+
+.sp-field:last-child {
+    margin-bottom: 0;
+}
+
+.sp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #c8c8d8;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+}
+
+.sp-field-desc {
+    font-size: 10px;
+    color: #4a4a6a;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+}
+
+/* =============================================================
+   4. FORM CONTROLS
+   ============================================================= */
+
+.sp-input {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    width: 100%;
+    padding: 8px 10px;
+    background: #09090f;
+    border: 1px solid #1e1e2e;
+    border-radius: 4px;
+    color: #e2e2f0;
+    outline: none;
+    transition: border-color 150ms ease;
+    letter-spacing: 0.04em;
+}
+
+.sp-input::placeholder {
+    color: #2e2e48;
+}
+
+.sp-input:focus {
+    border-color: #4f8ef7;
+}
+
+.sp-input.has-error {
+    border-color: #f74f6a;
+}
+
+.sp-select {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    width: 100%;
+    padding: 8px 10px;
+    background: #09090f;
+    border: 1px solid #1e1e2e;
+    border-radius: 4px;
+    color: #e2e2f0;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a4a6a'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    transition: border-color 150ms ease;
+}
+
+.sp-select:focus,
+.sp-select:hover {
+    border-color: #4f8ef7;
+}
+
+.sp-select option {
+    background: #0d0d18;
+    color: #e2e2f0;
+}
+
+/* =============================================================
+   5. API KEY EYE TOGGLE
+   ============================================================= */
+
+.sp-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+}
+
+.sp-input-row .sp-input {
+    flex: 1;
+}
+
+.sp-eye-btn {
+    font-size: 12px;
+    line-height: 1;
+    padding: 0 10px;
+    background: #111126;
+    border: 1px solid #1e1e2e;
+    border-radius: 4px;
+    color: #4a4a6a;
+    cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.sp-eye-btn:hover {
+    color: #e2e2f0;
+    border-color: #2a2a44;
+}
+
+/* =============================================================
+   6. STATUS INDICATOR
+   ============================================================= */
+
+.sp-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 10px;
+    background: #0a0a14;
+    border: 1px solid #1e1e2e;
+    border-radius: 4px;
+}
+
+.sp-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #3a3a50;    /* default: grey = not configured */
+    transition: background 200ms ease;
+}
+
+.sp-status-dot.grey    { background: #3a3a50; }
+.sp-status-dot.yellow  { background: #f7c94f; }
+.sp-status-dot.green   { background: #4ff7a0; }
+.sp-status-dot.red     { background: #f74f6a; }
+
+.sp-status-text {
+    font-size: 10px;
+    color: #4a4a6a;
+    letter-spacing: 0.05em;
+    transition: color 200ms ease;
+}
+
+.sp-status-text.green  { color: #4ff7a0; }
+.sp-status-text.red    { color: #f74f6a; }
+.sp-status-text.yellow { color: #f7c94f; }
+
+/* =============================================================
+   7. FIELD ERRORS AND LINKS
+   ============================================================= */
+
+.sp-field-error {
+    font-size: 10px;
+    color: #f74f6a;
+    margin-top: 5px;
+    min-height: 14px;    /* reserve space to avoid layout jumps */
+    letter-spacing: 0.03em;
+}
+
+.sp-field-link {
+    display: inline-block;
+    font-size: 10px;
+    color: #4a4a6a;
+    text-decoration: none;
+    margin-top: 8px;
+    letter-spacing: 0.03em;
+    transition: color 150ms ease;
+}
+
+.sp-field-link:hover {
+    color: #4f8ef7;
+    text-decoration: underline;
+}
+
+/* =============================================================
+   8. SLIDERS
+   ============================================================= */
+
+.sp-slider-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.sp-slider-header .sp-label {
+    margin-bottom: 0;
+}
+
+.sp-slider-value {
+    font-size: 11px;
+    font-weight: 500;
+    color: #4f8ef7;
+    min-width: 36px;
+    text-align: right;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Track + thumb — cross-browser */
+.sp-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: #1e1e2e;
+    outline: none;
+    cursor: pointer;
+    border-radius: 2px;
+    display: block;
+}
+
+/* Filled track via gradient — Webkit */
+.sp-slider::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 2px;
+    background: #1e1e2e;
+}
+
+.sp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4f8ef7;
+    cursor: pointer;
+    margin-top: -5px;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    box-shadow: none;
+}
+
+.sp-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
+.sp-slider:active::-webkit-slider-thumb {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 4px rgba(79, 142, 247, 0.2);
+}
+
+/* Firefox */
+.sp-slider::-moz-range-track {
+    height: 2px;
+    background: #1e1e2e;
+    border-radius: 2px;
+    border: none;
+}
+
+.sp-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4f8ef7;
+    cursor: pointer;
+    border: none;
+    transition: transform 150ms ease;
+}
+
+.sp-slider::-moz-range-thumb:hover {
+    transform: scale(1.3);
+}
+
+.sp-reset-btn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: none;
+    border: none;
+    color: #4f8ef7;
+    cursor: pointer;
+    padding: 8px 0 0;
+    display: block;
+    transition: opacity 150ms ease;
+}
+
+.sp-reset-btn:hover {
+    opacity: 0.75;
+}
+
+/* =============================================================
+   9. TIP BOX
+   ============================================================= */
+
+.sp-tip-box {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    background: #0a0a14;
+    border: 1px solid #1e1e2e;
+    border-radius: 4px;
+    font-size: 10px;
+    color: #4a4a6a;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    margin-top: 4px;
+}
+
+.sp-tip-box span:first-child {
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+/* =============================================================
+   10. FOOTER & BUTTONS
+   ============================================================= */
+
+.sp-footer {
+    flex-shrink: 0;
+    padding: 16px 20px;
+    border-top: 1px solid #1e1e2e;
+    background: #0d0d18;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sp-save-feedback {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    min-height: 14px;
+    text-align: center;
+}
+
+.sp-save-feedback.success {
+    color: #4ff7a0;
+}
+
+.sp-save-feedback.error {
+    color: #f74f6a;
+}
+
+.sp-footer-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.sp-btn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 10px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 150ms ease, opacity 150ms ease, border-color 150ms ease;
+    flex: 1;
+    text-align: center;
+}
+
+.sp-btn--cancel {
+    background: transparent;
+    border: 1px solid #1e1e2e;
+    color: #4a4a6a;
+}
+
+.sp-btn--cancel:hover {
+    background: #141428;
+    border-color: #2a2a44;
+    color: #c8c8d8;
+}
+
+.sp-btn--save {
+    background: #4f8ef7;
+    border: 1px solid #4f8ef7;
+    color: #09090f;
+}
+
+.sp-btn--save:hover {
+    opacity: 0.85;
+}
+
+.sp-btn--save:disabled {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Loading state for save button */
+.sp-btn--save.loading::after {
+    content: "…";
+}
+
+.sp-btn--test {
+    background: transparent;
+    border: 1px solid rgba(79, 142, 247, 0.35);
+    color: #4f8ef7;
+}
+
+.sp-btn--test:hover {
+    background: rgba(79, 142, 247, 0.1);
+}
+
+.sp-btn--test:disabled {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* =============================================================
+   11. STARTUP / API-KEY BANNER
+   ============================================================= */
+
+#ng-api-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 20px;
+    background: #1a1408;
+    border-bottom: 1px solid #3a2a10;
+    font-size: 11px;
+    color: #f7a04f;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    animation: banner-in 300ms ease-out;
+}
+
+@keyframes banner-in {
+    from { opacity: 0; transform: translateY(-100%); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ng-banner-text {
+    flex: 1;
+}
+
+.ng-banner-cta {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: transparent;
+    border: 1px solid rgba(247, 160, 79, 0.35);
+    border-radius: 4px;
+    color: #f7a04f;
+    padding: 5px 12px;
+    cursor: pointer;
+    margin: 0 12px;
+    transition: background 150ms ease, border-color 150ms ease;
+}
+
+.ng-banner-cta:hover {
+    background: rgba(247, 160, 79, 0.08);
+    border-color: #f7a04f;
+}
+
+.ng-banner-dismiss {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    color: rgba(247, 160, 79, 0.5);
+    cursor: pointer;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    transition: color 150ms ease;
+    flex-shrink: 0;
+}
+
+.ng-banner-dismiss:hover {
+    color: #f7a04f;
+}
